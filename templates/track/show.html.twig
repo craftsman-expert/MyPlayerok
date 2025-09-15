@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Track{% endblock %}
+
+{% block body %}
+    <h1>Track</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ track.id }}</td>
+            </tr>
+            <tr>
+                <th>Title</th>
+                <td>{{ track.title }}</td>
+            </tr>
+            <tr>
+                <th>Artist</th>
+                <td>{{ track.artist }}</td>
+            </tr>
+            <tr>
+                <th>Duration</th>
+                <td>{{ track.duration }}</td>
+            </tr>
+            <tr>
+                <th>FilePath</th>
+                <td>{{ track.filePath }}</td>
+            </tr>
+            <tr>
+                <th>Album</th>
+                <td>{{ track.album }}</td>
+            </tr>
+            <tr>
+                <th>Genre</th>
+                <td>{{ track.genre }}</td>
+            </tr>
+            <tr>
+                <th>CoverImage</th>
+                <td>{{ track.coverImage }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_track_index') }}">back to list</a>
+
+    <a href="{{ path('app_track_edit', {'id': track.id}) }}">edit</a>
+
+    {{ include('track/_delete_form.html.twig') }}
+{% endblock %}
