@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Controller\Repository\TrackRepository;
+use App\Repository\TrackRepository;
 use App\Entity\Track;
 use App\Form\TrackType;
 use Doctrine\ORM\EntityManagerInterface;

@@ -11,12 +11,12 @@ php -S localhost:8000 -t public/
 В любом месте WSL
 ```shell
 docker run --rm \
-  --name cms.loc \
-  -e MYSQL_DATABASE=cms \
-  -e MYSQL_USER=dcms \
-  -e MYSQL_PASSWORD=cms \
-  -e MYSQL_ROOT_PASSWORD=cms \
-  -v mysql-test-data:/var/lib/mysql \
-  -p 3307:3307 \
+  --name mysql-myplayerok \
+  -e MYSQL_DATABASE=myplayerok \
+  -e MYSQL_USER=vokintos \
+  -e MYSQL_PASSWORD=111 \
+  -e MYSQL_ROOT_PASSWORD=rootpassword \
+  -v mysql-data:/var/lib/mysql \
+  -p 3307:3306 \
   mysql:8
 
