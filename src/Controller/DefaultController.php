@@ -11,22 +11,6 @@ class DefaultController extends AbstractController
     #[Route('/', name: 'home')]
     public function index(): Response
     {
-        return new Response('
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <title>Музыкальный плеер</title>
-                <style>
-                    body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
-                    h1 { color: #333; }
-                </style>
-            </head>
-            <body>
-                <h1>🎵 Добро пожаловать в MyPlayerok!</h1>
-                <p>Ваш музыкальный плеер на Symfony</p>
-                <p><a href="/track/">Управление треками</a></p>
-            </body>
-            </html>
-        ');
+        return $this->render('home/index.html.twig');
     }
 }

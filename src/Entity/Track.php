@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use App\Controller\Repository\TrackRepository;
+use App\Repository\TrackRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: TrackRepository::class)]
