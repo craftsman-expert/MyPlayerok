@@ -62,10 +62,16 @@
                                 <h1 class="h3 mb-1">Моя музыка</h1>
                                 <p class="text-muted mb-0">Выберите трек, чтобы начать воспроизведение.</p>
                             </div>
-                            <a href="{{ path('app_track_new') }}" class="btn btn-light btn-lg d-flex align-items-center gap-2 shadow-sm">
-                                <i class="bi bi-upload"></i>
-                                <span>Добавить трек</span>
-                            </a>
+                            <div class="d-flex flex-wrap gap-2">
+                                <a href="{{ path('app_track_new') }}" class="btn btn-light btn-lg d-flex align-items-center gap-2 shadow-sm">
+                                    <i class="bi bi-upload"></i>
+                                    <span>Добавить трек</span>
+                                </a>
+                                <a href="{{ path('app_playlist_index') }}" class="btn btn-outline-light btn-lg d-flex align-items-center gap-2 shadow-sm">
+                                    <i class="bi bi-music-note-list"></i>
+                                    <span>Плейлисты</span>
+                                </a>
+                            </div>
                         </div>
 
                         {% if tracks is not empty %}

@@ -1,0 +1,7 @@
+<form method="post" action="{{ path('app_playlist_delete', {'id': playlist.id}) }}" class="d-inline" onsubmit="return confirm('Удалить плейлист «{{ playlistName|default(playlist.name ?? 'этот плейлист') }}»?');">
+    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ playlist.id) }}">
+    <button class="{{ btn_class|default('btn btn-outline-danger btn-sm') }}">
+        <i class="bi bi-trash"></i>
+        <span class="d-none d-sm-inline">Удалить</span>
+    </button>
+</form>
