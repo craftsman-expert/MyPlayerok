@@ -2,10 +2,9 @@
 
 namespace App\Entity;
 
-use App\Controller\Repository\PlaylistRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: PlaylistRepository::class)]
+#[ORM\Entity]
 class Playlist
 {
     #[ORM\Id]
