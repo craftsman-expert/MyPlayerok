@@ -16,6 +16,15 @@ class DefaultController extends AbstractController
     {
         $tracks = $trackRepository->findBy([], ['id' => 'DESC']);
 
+        $featureFlags = [
+            'visualizer' => (bool) $this->getParameter('features.visualizer'),
+        ];
+
+        $visualizerDefaults = $this->getParameter('visualizer.defaults');
+        if (!\is_array($visualizerDefaults)) {
+            $visualizerDefaults = [];
+        }
+
         return $this->render('home/index.html.twig', [
             'tracks' => $tracks,
             'artistCounts' => $this->groupByCounts($tracks, static fn (Track $track): ?string => $track->getArtist(), TrackManager::UNKNOWN_ARTIST),
@@ -25,6 +34,8 @@ class DefaultController extends AbstractController
                 'artist' => TrackManager::UNKNOWN_ARTIST,
                 'album' => TrackManager::UNKNOWN_ALBUM,
             ],
+            'featureFlags' => $featureFlags,
+            'visualizerDefaults' => $visualizerDefaults,
         ]);
     }
 

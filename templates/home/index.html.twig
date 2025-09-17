@@ -68,6 +68,65 @@
                             </a>
                         </div>
 
+                        {% if featureFlags.visualizer ?? false %}
+                            <div class="visualizer-panel" data-visualizer-root data-visualizer-defaults="{{ (visualizerDefaults|default({}))|json_encode|e('html_attr') }}">
+                                <div class="visualizer-toolbar d-flex flex-wrap align-items-center justify-content-between gap-3">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="visualizer-icon d-flex align-items-center justify-content-center rounded-circle">
+                                            <i class="bi bi-activity"></i>
+                                        </div>
+                                        <div>
+                                            <div class="fw-semibold">Визуализация</div>
+                                            <div class="text-muted small">Анимация звука в реальном времени</div>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-3 flex-wrap justify-content-end">
+                                        <span class="badge rounded-pill visualizer-state" data-visualizer-state>Выключено</span>
+                                        <div class="form-check form-switch m-0">
+                                            <input class="form-check-input" type="checkbox" role="switch" id="visualizerToggle" data-visualizer-toggle>
+                                            <label class="form-check-label" for="visualizerToggle">Включить</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="visualizer-modes btn-group flex-wrap w-100" role="group" aria-label="Режим визуализации">
+                                    <button type="button" class="btn" data-visualizer-mode="bars">Бары</button>
+                                    <button type="button" class="btn" data-visualizer-mode="wave">Волна</button>
+                                    <button type="button" class="btn" data-visualizer-mode="rings">Кольца</button>
+                                    <button type="button" class="btn" data-visualizer-mode="particles">Частицы</button>
+                                </div>
+                                <div class="visualizer-canvas mt-3">
+                                    <canvas id="visualizer"></canvas>
+                                    <div class="visualizer-placeholder" data-visualizer-placeholder>
+                                        <div class="visualizer-placeholder-content text-center">
+                                            <i class="bi bi-soundwave mb-2"></i>
+                                            <p class="mb-0">Воспроизведите трек, чтобы увидеть визуализацию</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row g-4 mt-1 visualizer-settings">
+                                    <div class="col-md-4">
+                                        <label for="visualizerSensitivity" class="form-label text-uppercase small fw-semibold">Чувствительность</label>
+                                        <input type="range" class="form-range" min="0.4" max="1.5" step="0.05" id="visualizerSensitivity" data-visualizer-sensitivity>
+                                        <div class="form-text text-muted" data-visualizer-sensitivity-value></div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="visualizerSmoothing" class="form-label text-uppercase small fw-semibold">Сглаживание</label>
+                                        <input type="range" class="form-range" min="0" max="0.95" step="0.05" id="visualizerSmoothing" data-visualizer-smoothing>
+                                        <div class="form-text text-muted" data-visualizer-smoothing-value></div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="visualizerTheme" class="form-label text-uppercase small fw-semibold">Цветовая тема</label>
+                                        <select class="form-select" id="visualizerTheme" data-visualizer-theme>
+                                            <option value="neon">Неон</option>
+                                            <option value="aurora">Аврора</option>
+                                            <option value="sunset">Закат</option>
+                                            <option value="light">Светлая</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+
                         {% if tracks is not empty %}
                             <div class="track-collection d-flex flex-column gap-2" data-track-list>
                                 {% for track in tracks %}

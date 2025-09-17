@@ -20,6 +20,16 @@
         return;
     }
 
+    const visualizerRoot = playerRoot.querySelector('[data-visualizer-root]');
+    const visualizer = visualizerRoot && window.MyPlayerVisualizer && typeof window.MyPlayerVisualizer.attachVisualizer === 'function'
+        ? window.MyPlayerVisualizer.attachVisualizer({
+            root: visualizerRoot,
+            audio,
+            window,
+            document,
+        })
+        : null;
+
     const defaultCover = playerRoot.dataset.defaultCover || '';
     const trackList = playerRoot.querySelector('[data-track-list]');
     const trackItems = trackList ? Array.from(trackList.querySelectorAll('[data-track-index]')) : [];

@@ -6,6 +6,13 @@
 parameters:
     app.upload_dir.tracks: '%kernel.project_dir%/public/uploads/tracks'
     app.upload_dir.covers: '%kernel.project_dir%/public/uploads/covers'
+    features.visualizer: '%env(bool:FEATURE_VISUALIZER)%'
+    visualizer.defaults:
+        enabled: true
+        mode: 'bars'
+        sensitivity: 0.85
+        smoothing: 0.6
+        theme: 'neon'
 
 services:
     # default configuration for services in *this* file
