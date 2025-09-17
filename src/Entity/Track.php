@@ -16,10 +16,10 @@ class Track
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $title = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $artist = null;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?int $duration = null;
 
     #[ORM\Column(length: 255)]
@@ -56,7 +56,7 @@ class Track
         return $this->artist;
     }
 
-    public function setArtist(string $artist): static
+    public function setArtist(?string $artist): static
     {
         $this->artist = $artist;
 
@@ -68,7 +68,7 @@ class Track
         return $this->duration;
     }
 
-    public function setDuration(int $duration): static
+    public function setDuration(?int $duration): static
     {
         $this->duration = $duration;
 
@@ -121,5 +121,17 @@ class Track
         $this->coverImage = $coverImage;
 
         return $this;
+    }
+
+    public function getFormattedDuration(): ?string
+    {
+        if ($this->duration === null) {
+            return null;
+        }
+
+        $seconds = max(0, $this->duration);
+        $format = $seconds >= 3600 ? 'H:i:s' : 'i:s';
+
+        return gmdate($format, $seconds);
     }
 }
