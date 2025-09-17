@@ -1,50 +1,63 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Track{% endblock %}
+{% block title %}{{ track.title ?? defaults.title }}{% endblock %}
 
 {% block body %}
-    <h1>Track</h1>
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="glass-panel p-4 p-lg-5">
+                    <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
+                        <div>
+                            <h1 class="h3 mb-2">{{ track.title ?? defaults.title }}</h1>
+                            <p class="text-muted mb-0">{{ (track.artist ?? defaults.artist) ~ ' • ' ~ (track.album ?? defaults.album) }}</p>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <a href="{{ path('app_track_edit', {'id': track.id}) }}" class="btn btn-outline-light">
+                                <i class="bi bi-pencil"></i>
+                                Редактировать
+                            </a>
+                            <a href="{{ path('app_track_index') }}" class="btn btn-outline-light">
+                                <i class="bi bi-arrow-left"></i>
+                                К списку
+                            </a>
+                        </div>
+                    </div>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ track.id }}</td>
-            </tr>
-            <tr>
-                <th>Title</th>
-                <td>{{ track.title }}</td>
-            </tr>
-            <tr>
-                <th>Artist</th>
-                <td>{{ track.artist }}</td>
-            </tr>
-            <tr>
-                <th>Duration</th>
-                <td>{{ track.duration }}</td>
-            </tr>
-            <tr>
-                <th>FilePath</th>
-                <td>{{ track.filePath }}</td>
-            </tr>
-            <tr>
-                <th>Album</th>
-                <td>{{ track.album }}</td>
-            </tr>
-            <tr>
-                <th>Genre</th>
-                <td>{{ track.genre }}</td>
-            </tr>
-            <tr>
-                <th>CoverImage</th>
-                <td>{{ track.coverImage }}</td>
-            </tr>
-        </tbody>
-    </table>
+                    <div class="row g-4 align-items-start">
+                        <div class="col-md-4">
+                            <div class="player-cover-sm w-100" style="height: auto; aspect-ratio: 1;">
+                                <img src="{{ track.coverImage ? asset(track.coverImage) : asset('images/default-cover.svg') }}" alt="Обложка">
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <dl class="row gy-3 mb-0">
+                                <dt class="col-sm-4 text-muted">Исполнитель</dt>
+                                <dd class="col-sm-8">{{ track.artist ?? defaults.artist }}</dd>
+                                <dt class="col-sm-4 text-muted">Альбом</dt>
+                                <dd class="col-sm-8">{{ track.album ?? defaults.album }}</dd>
+                                <dt class="col-sm-4 text-muted">Жанр</dt>
+                                <dd class="col-sm-8">{{ track.genre ?? '—' }}</dd>
+                                <dt class="col-sm-4 text-muted">Длительность</dt>
+                                <dd class="col-sm-8">{{ track.formattedDuration ?? '—' }}</dd>
+                                <dt class="col-sm-4 text-muted">Файл</dt>
+                                <dd class="col-sm-8">
+                                    <a href="{{ asset(track.filePath) }}" class="link-light" target="_blank">{{ track.filePath }}</a>
+                                </dd>
+                            </dl>
+                            <div class="mt-4">
+                                <audio class="w-100" controls preload="metadata" src="{{ asset(track.filePath) }}">
+                                    Ваш браузер не поддерживает воспроизведение аудио.
+                                </audio>
+                            </div>
+                        </div>
+                    </div>
 
-    <a href="{{ path('app_track_index') }}">back to list</a>
-
-    <a href="{{ path('app_track_edit', {'id': track.id}) }}">edit</a>
-
-    {{ include('track/_delete_form.html.twig') }}
+                    <div class="mt-4 d-flex justify-content-end">
+                        {{ include('track/_delete_form.html.twig', { 'track': track, 'trackName': track.title ?? defaults.title, 'btn_class': 'btn btn-outline-danger' }) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}

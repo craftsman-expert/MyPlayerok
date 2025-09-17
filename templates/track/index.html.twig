@@ -1,47 +1,70 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Track index{% endblock %}
+{% block title %}Коллекция треков{% endblock %}
 
 {% block body %}
-    <h1>Track index</h1>
+    <div class="container py-5">
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+            <div>
+                <h1 class="h3 mb-1">Коллекция треков</h1>
+                <p class="text-muted mb-0">Управляйте аудиотекой и обновляйте метаданные.</p>
+            </div>
+            <a href="{{ path('app_track_new') }}" class="btn btn-primary btn-lg d-flex align-items-center gap-2">
+                <i class="bi bi-upload"></i>
+                <span>Добавить трек</span>
+            </a>
+        </div>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Title</th>
-                <th>Artist</th>
-                <th>Duration</th>
-                <th>FilePath</th>
-                <th>Album</th>
-                <th>Genre</th>
-                <th>CoverImage</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for track in tracks %}
-            <tr>
-                <td>{{ track.id }}</td>
-                <td>{{ track.title }}</td>
-                <td>{{ track.artist }}</td>
-                <td>{{ track.duration }}</td>
-                <td>{{ track.filePath }}</td>
-                <td>{{ track.album }}</td>
-                <td>{{ track.genre }}</td>
-                <td>{{ track.coverImage }}</td>
-                <td>
-                    <a href="{{ path('app_track_show', {'id': track.id}) }}">show</a>
-                    <a href="{{ path('app_track_edit', {'id': track.id}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="9">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-
-    <a href="{{ path('app_track_new') }}">Create new</a>
+        <div class="glass-panel p-4">
+            {% if tracks is not empty %}
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0 text-white">
+                        <thead class="table-dark">
+                            <tr>
+                                <th scope="col">Трек</th>
+                                <th scope="col">Исполнитель</th>
+                                <th scope="col">Альбом</th>
+                                <th scope="col">Жанр</th>
+                                <th scope="col">Длительность</th>
+                                <th scope="col" class="text-end">Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for track in tracks %}
+                                {% set title = track.title ?? defaults.title %}
+                                {% set artist = track.artist ?? defaults.artist %}
+                                {% set album = track.album ?? defaults.album %}
+                                <tr>
+                                    <td>
+                                        <div class="fw-semibold">{{ title }}</div>
+                                        <div class="text-muted small">{{ track.filePath }}</div>
+                                    </td>
+                                    <td>{{ artist }}</td>
+                                    <td>{{ album }}</td>
+                                    <td>{{ track.genre ?? '—' }}</td>
+                                    <td>{{ track.formattedDuration ?? '—' }}</td>
+                                    <td class="text-end">
+                                        <div class="d-inline-flex gap-2">
+                                            <a href="{{ path('app_track_show', {'id': track.id}) }}" class="btn btn-outline-light btn-sm" title="Просмотр">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            <a href="{{ path('app_track_edit', {'id': track.id}) }}" class="btn btn-outline-light btn-sm" title="Редактировать">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            {{ include('track/_delete_form.html.twig', { 'track': track, 'trackName': title }) }}
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="py-5 text-center text-muted">
+                    <p class="mb-3">Треки пока не добавлены.</p>
+                    <a href="{{ path('app_track_new') }}" class="btn btn-outline-light">Добавить первый трек</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
 {% endblock %}
