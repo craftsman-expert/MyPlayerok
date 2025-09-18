@@ -1,21 +1,25 @@
-{{ form_start(form, {'attr': {'class': 'row g-4'}}) }}
+{{ form_start(form, {'attr': {
+    'class': 'row g-4',
+    'data-track-form': 'true',
+    'data-track-metadata-url': path('app_track_guess_metadata')
+}}) }}
     <div class="col-12">
         {{ form_label(form.audioFile, null, {'label_attr': {'class': 'form-label text-uppercase small text-muted fw-semibold'}}) }}
-        {{ form_widget(form.audioFile, {'attr': {'class': 'form-control form-control-lg'}}) }}
-        <div class="form-text text-muted">{{ form_help(form.audioFile) }}</div>
+        {{ form_widget(form.audioFile, {'attr': {'class': 'form-control form-control-lg', 'data-track-audio': 'true'}}) }}
+        <div class="form-text text-muted" data-track-feedback>{{ form_help(form.audioFile) }}</div>
         {{ form_errors(form.audioFile) }}
     </div>
     <div class="col-md-6">
-        {{ form_row(form.title, {'attr': {'class': 'form-control form-control-lg'}}) }}
+        {{ form_row(form.title, {'attr': {'class': 'form-control form-control-lg', 'data-track-field': 'title'}}) }}
     </div>
     <div class="col-md-6">
-        {{ form_row(form.artist, {'attr': {'class': 'form-control form-control-lg'}}) }}
+        {{ form_row(form.artist, {'attr': {'class': 'form-control form-control-lg', 'data-track-field': 'artist'}}) }}
     </div>
     <div class="col-md-6">
-        {{ form_row(form.album, {'attr': {'class': 'form-control form-control-lg'}}) }}
+        {{ form_row(form.album, {'attr': {'class': 'form-control form-control-lg', 'data-track-field': 'album'}}) }}
     </div>
     <div class="col-md-6">
-        {{ form_row(form.genre, {'attr': {'class': 'form-control form-control-lg'}}) }}
+        {{ form_row(form.genre, {'attr': {'class': 'form-control form-control-lg', 'data-track-field': 'genre'}}) }}
     </div>
     <div class="col-12 d-flex justify-content-end gap-2 pt-3">
         <a href="{{ path('app_track_index') }}" class="btn btn-outline-light px-4">

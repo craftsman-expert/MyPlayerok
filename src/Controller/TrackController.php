@@ -8,9 +8,15 @@ use App\Repository\TrackRepository;
 use App\Service\TrackManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use function array_filter;
+use function is_int;
+use function is_string;
+use function trim;
 
 #[Route('/track')]
 class TrackController extends AbstractController
@@ -65,6 +71,54 @@ class TrackController extends AbstractController
                 'artist' => TrackManager::UNKNOWN_ARTIST,
                 'album' => TrackManager::UNKNOWN_ALBUM,
             ],
+        ]);
+    }
+
+    #[Route('/metadata/guess', name: 'app_track_guess_metadata', methods: ['POST'])]
+    public function guessMetadata(Request $request, TrackManager $trackManager): JsonResponse
+    {
+        $uploadedFile = $request->files->get('audio');
+        if (!$uploadedFile instanceof UploadedFile || !$uploadedFile->isValid()) {
+            return $this->json([
+                'success' => false,
+                'message' => 'Не удалось обработать загруженный файл. Попробуйте выбрать другой аудиофайл.',
+            ], Response::HTTP_BAD_REQUEST);
+        }
+
+        $metadata = $trackManager->guessMetadata($uploadedFile);
+        $data = [
+            'title' => $metadata->getTitle(),
+            'artist' => $metadata->getArtist(),
+            'album' => $metadata->getAlbum(),
+            'genre' => $metadata->getGenre(),
+            'duration' => $metadata->getDuration(),
+        ];
+
+        $nonEmpty = array_filter($data, static function ($value): bool {
+            if ($value === null) {
+                return false;
+            }
+
+            if (is_string($value)) {
+                return trim($value) !== '';
+            }
+
+            if (is_int($value)) {
+                return $value > 0;
+            }
+
+            return true;
+        });
+
+        $hasMetadata = !empty($nonEmpty);
+
+        return $this->json([
+            'success' => true,
+            'data' => $data,
+            'hasMetadata' => $hasMetadata,
+            'message' => $hasMetadata
+                ? 'Метаданные загруженного трека определены автоматически.'
+                : 'Метаданные не найдены, заполните поля вручную.',
         ]);
     }
 

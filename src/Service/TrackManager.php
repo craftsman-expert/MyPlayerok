@@ -59,6 +59,11 @@ class TrackManager
         $this->applyMetadata($track, $metadata);
     }
 
+    public function guessMetadata(UploadedFile $audioFile): AudioMetadata
+    {
+        return $this->metadataReader->extract($audioFile->getPathname());
+    }
+
     public function ensureDefaults(Track $track, ?string $originalName = null): void
     {
         if (!$track->getTitle()) {

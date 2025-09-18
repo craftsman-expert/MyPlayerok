@@ -432,3 +432,143 @@
     }
     preloadDurations();
 })();
+
+(function () {
+    const forms = Array.from(document.querySelectorAll('[data-track-form]'));
+    if (!forms.length) {
+        return;
+    }
+
+    forms.forEach((form) => {
+        if (!(form instanceof HTMLFormElement)) {
+            return;
+        }
+
+        const metadataUrl = form.dataset.trackMetadataUrl || '';
+        if (!metadataUrl) {
+            return;
+        }
+
+        const audioInput = form.querySelector('[data-track-audio]');
+        if (!(audioInput instanceof HTMLInputElement)) {
+            return;
+        }
+
+        const titleInput = form.querySelector('[data-track-field="title"]');
+        const artistInput = form.querySelector('[data-track-field="artist"]');
+        const albumInput = form.querySelector('[data-track-field="album"]');
+        const genreInput = form.querySelector('[data-track-field="genre"]');
+        const feedbackEl = form.querySelector('[data-track-feedback]');
+
+        const defaultFeedback = feedbackEl instanceof HTMLElement ? feedbackEl.textContent : '';
+
+        const markManualChange = (input) => {
+            if (!(input instanceof HTMLInputElement)) {
+                return;
+            }
+            input.addEventListener('input', () => {
+                if (input.dataset.autofilled) {
+                    delete input.dataset.autofilled;
+                }
+            });
+        };
+
+        [titleInput, artistInput, albumInput, genreInput].forEach((input) => markManualChange(input));
+
+        let controller = null;
+
+        const setFeedback = (message, tone = 'muted') => {
+            if (!(feedbackEl instanceof HTMLElement)) {
+                return;
+            }
+            const text = typeof message === 'string' && message.trim() !== '' ? message : defaultFeedback;
+            feedbackEl.textContent = text;
+            feedbackEl.classList.remove('text-danger', 'text-success', 'text-muted');
+            const toneClass = tone === 'success' ? 'text-success' : tone === 'error' ? 'text-danger' : 'text-muted';
+            feedbackEl.classList.add(toneClass);
+        };
+
+        const applyValue = (input, value) => {
+            if (!(input instanceof HTMLInputElement)) {
+                return;
+            }
+            if (typeof value !== 'string' || value.trim() === '') {
+                return;
+            }
+            if (input.value.trim() === '' || input.dataset.autofilled === 'true') {
+                input.value = value.trim();
+                input.dataset.autofilled = 'true';
+            }
+        };
+
+        audioInput.addEventListener('change', () => {
+            if (!audioInput.files || !audioInput.files.length) {
+                setFeedback(defaultFeedback, 'muted');
+                return;
+            }
+
+            const file = audioInput.files[0];
+            if (!file) {
+                setFeedback(defaultFeedback, 'muted');
+                return;
+            }
+
+            if (controller) {
+                controller.abort();
+            }
+
+            controller = new AbortController();
+
+            const formData = new FormData();
+            formData.append('audio', file);
+
+            setFeedback('Определяем метаданные...', 'muted');
+
+            fetch(metadataUrl, {
+                method: 'POST',
+                body: formData,
+                credentials: 'same-origin',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    Accept: 'application/json',
+                },
+                signal: controller.signal,
+            })
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error(`Request failed with status ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then((payload) => {
+                    if (!payload || typeof payload !== 'object') {
+                        throw new Error('Некорректный ответ сервера');
+                    }
+
+                    if (!payload.success) {
+                        setFeedback(payload.message || defaultFeedback, 'error');
+                        return;
+                    }
+
+                    const data = payload.data || {};
+                    applyValue(titleInput, data.title);
+                    applyValue(artistInput, data.artist);
+                    applyValue(albumInput, data.album);
+                    applyValue(genreInput, data.genre);
+
+                    const tone = payload.hasMetadata ? 'success' : 'muted';
+                    setFeedback(payload.message || defaultFeedback, tone);
+                })
+                .catch((error) => {
+                    if (error.name === 'AbortError') {
+                        return;
+                    }
+                    console.error('Не удалось получить метаданные трека', error);
+                    setFeedback('Не удалось считать метаданные. Заполните поля вручную.', 'error');
+                })
+                .finally(() => {
+                    controller = null;
+                });
+        });
+    });
+})();
