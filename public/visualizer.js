@@ -712,6 +712,10 @@
         const smoothingValue = root.querySelector('[data-visualizer-smoothing-value]');
         const canvasWrapper = root.querySelector('.visualizer-canvas');
 
+        let lastCanvasWidth = 0;
+        let lastCanvasHeight = 0;
+        let lastPixelRatio = 0;
+
         const engine = new VisualizerEngine(audio, canvas, {
             initialSettings: settings,
             requestAnimationFrame: options.requestAnimationFrame,
@@ -811,18 +815,54 @@
             if (!canvasWrapper || !canvas) {
                 return;
             }
-            const rect = typeof canvasWrapper.getBoundingClientRect === 'function'
-                ? canvasWrapper.getBoundingClientRect()
-                : { width: canvasWrapper.clientWidth, height: canvasWrapper.clientHeight };
-            if (!rect || rect.width === 0 || rect.height === 0) {
+
+            let width = Math.round(canvasWrapper.clientWidth || 0);
+            let height = Math.round(canvasWrapper.clientHeight || 0);
+
+            if (!width || !height) {
+                const rect = typeof canvasWrapper.getBoundingClientRect === 'function'
+                    ? canvasWrapper.getBoundingClientRect()
+                    : null;
+                if (rect) {
+                    const borderX = canvasWrapper.offsetWidth - canvasWrapper.clientWidth;
+                    const borderY = canvasWrapper.offsetHeight - canvasWrapper.clientHeight;
+                    width = Math.round(rect.width - borderX);
+                    height = Math.round(rect.height - borderY);
+                }
+            }
+
+            width = Math.max(0, width);
+            height = Math.max(0, height);
+
+            if (!width || !height) {
                 return;
             }
-            const ratio = windowRef && windowRef.devicePixelRatio ? windowRef.devicePixelRatio : 1;
-            canvas.width = rect.width * ratio;
-            canvas.height = rect.height * ratio;
-            canvas.style.width = `${rect.width}px`;
-            canvas.style.height = `${rect.height}px`;
-            engine.setDimensions(rect.width, rect.height, ratio);
+
+            const ratioRaw = windowRef && typeof windowRef.devicePixelRatio === 'number'
+                ? windowRef.devicePixelRatio
+                : 1;
+            const ratio = Number.isFinite(ratioRaw) && ratioRaw > 0 ? ratioRaw : 1;
+
+            if (width === lastCanvasWidth && height === lastCanvasHeight && ratio === lastPixelRatio) {
+                return;
+            }
+
+            lastCanvasWidth = width;
+            lastCanvasHeight = height;
+            lastPixelRatio = ratio;
+
+            const scaledWidth = Math.max(1, Math.round(width * ratio));
+            const scaledHeight = Math.max(1, Math.round(height * ratio));
+
+            if (canvas.width !== scaledWidth) {
+                canvas.width = scaledWidth;
+            }
+            if (canvas.height !== scaledHeight) {
+                canvas.height = scaledHeight;
+            }
+            canvas.style.width = `${width}px`;
+            canvas.style.height = `${height}px`;
+            engine.setDimensions(width, height, ratio);
         }
 
         const cleanup = [];
